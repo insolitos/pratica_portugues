@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pratica Português</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(-50px) translateY(-50px); }
+            100% { transform: translateX(50px) translateY(50px); }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #343a40;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 10px;
+            background: #343a40;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            min-width: 120px;
+        }
+
+        .nav-tab:hover {
+            background: #495057;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .exercise-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #007bff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(0,123,255,0.1), transparent);
+            border-radius: 50%;
+        }
+
+        .question {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+
+        .option.selected {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .option.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+            animation: pulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .input-exercise {
+            margin-bottom: 20px;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0,123,255,0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.5s ease;
+        }
+
+        .achievement {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #856404;
+            display: none;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .creative-writing {
+            background: linear-gradient(135deg, #e83e8c, #fd7e14);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .word-count {
+            text-align: right;
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇵🇹 Pratica Português</h1>
+            <p>Melhora o teu português de forma divertida!</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="correct-count">0</div>
+                <div class="stat-label">Corretas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="total-count">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="accuracy">0%</div>
+                <div class="stat-label">Precisão</div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('prepositions')">Preposições</button>
+            <button class="nav-tab" onclick="showSection('adjectives')">Adjetivos</button>
+            <button class="nav-tab" onclick="showSection('verbs')">Verbos</button>
+            <button class="nav-tab" onclick="showSection('adverbs')">Advérbios</button>
+            <button class="nav-tab" onclick="showSection('pronouns')">Pronomes</button>
+            <button class="nav-tab" onclick="showSection('writing')">Escrita</button>
+            <button class="nav-tab" onclick="showSection('speaking')">Oralidade</button>
+        </div>
+
+        <div class="content">
+            <div class="achievement" id="achievement">
+                <span class="emoji">🎉</span>
+                <span id="achievement-text">Excelente trabalho!</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+
+            <!-- Preposições -->
+            <div id="prepositions" class="section active">
+                <div class="exercise-card">
+                    <div class="question" id="prep-question">Carregando exercício...</div>
+                    <div class="options" id="prep-options"></div>
+                    <div class="buttons">
+                        <button class="btn btn-primary" onclick="checkAnswer('prepositions')">Verificar</button>
+                        <button class="btn btn-warning" onclick="nextExercise('prepositions')">Próximo</button>
+                    </div>
+                    <div id="prep-feedback" class="feedback" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Adjetivos -->
+            <div id="adjectives" class="section">
+                <div class="exercise-card">
+                    <div class="question" id="adj-question">Carregando exercício...</div>
+                    <div class="options" id="adj-options"></div>
+                    <div class="buttons">
+                        <button class="btn btn-primary" onclick="checkAnswer('adjectives')">Verificar</button>
+                        <button class="btn btn-warning" onclick="nextExercise('adjectives')">Próximo</button>
+                    </div>
+                    <div id="adj-feedback" class="feedback" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Verbos -->
+            <div id="verbs" class="section">
+                <div class="exercise-card">
+                    <div class="question" id="verb-question">Carregando exercício...</div>
+                    <div class="options" id="verb-options"></div>
+                    <div class="buttons">
+                        <button class="btn btn-primary" onclick="checkAnswer('verbs')">Verificar</button>
+                        <button class="btn btn-warning" onclick="nextExercise('verbs')">Próximo</button>
+                    </div>
+                    <div id="verb-feedback" class="feedback" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Advérbios -->
+            <div id="adverbs" class="section">
+                <div class="exercise-card">
+                    <div class="question" id="adv-question">Carregando exercício...</div>
+                    <div class="options" id="adv-options"></div>
+                    <div class="buttons">
+                        <button class="btn btn-primary" onclick="checkAnswer('adverbs')">Verificar</button>
+                        <button class="btn btn-warning" onclick="nextExercise('adverbs')">Próximo</button>
+                    </div>
+                    <div id="adv-feedback" class="feedback" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Pronomes -->
+            <div id="pronouns" class="section">
+                <div class="exercise-card">
+                    <div class="question" id="pron-question">Carregando exercício...</div>
+                    <div class="options" id="pron-options"></div>
+                    <div class="buttons">
+                        <button class="btn btn-primary" onclick="checkAnswer('pronouns')">Verificar</button>
+                        <button class="btn btn-warning" onclick="nextExercise('pronouns')">Próximo</button>
+                    </div>
+                    <div id="pron-feedback" class="feedback" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Escrita -->
+            <div id="writing" class="section">
+                <div class="creative-writing">
+                    <h3>✍️ Exercício de Escrita Criativa</h3>
+                    <div id="writing-prompt">Carregando tema...</div>
+                </div>
+                <div class="input-exercise">
+                    <textarea id="writing-input" class="text-input" rows="8" placeholder="Escreve aqui o teu texto..."></textarea>
+                    <div class="word-count">Palavras: <span id="word-count">0</span></div>
+                    <div class="buttons">
+                        <button class="btn btn-success" onclick="analyzeWriting()">Analisar Texto</button>
+                        <button class="btn btn-warning" onclick="nextWritingPrompt()">Novo Tema</button>
+                    </div>
+                    <div id="writing-feedback" class="feedback" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Oralidade -->
+            <div id="speaking" class="section">
+                <div class="exercise-card">
+                    <h3>🎤 Exercício de Oralidade</h3>
+                    <div class="question" id="speaking-text">Carregando texto...</div>
+                    <div class="buttons">
+                        <button class="btn btn-primary" onclick="startListening()">🎙️ Gravar Leitura</button>
+                        <button class="btn btn-warning" onclick="nextSpeakingText()">Novo Texto</button>
+                        <button class="btn btn-success" onclick="playCorrectPronunciation()">🔊 Pronúncia Correcta</button>
+                    </div>
+                    <div id="speaking-feedback" class="feedback" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos exercícios
+        const exerciseData = {
+            prepositions: [
+                {
+                    question: "Vou ___ escola todos os dias.",
+                    options: ["à", "na", "para", "em"],
+                    correct: 0,
+                    explanation: "Usamos 'à' com o verbo 'ir' para indicar destino com movimento."
+                },
+                {
+                    question: "O livro está ___ mesa.",
+                    options: ["na", "à", "para", "com"],
+                    correct: 0,
+                    explanation: "'Na' indica localização sobre uma superfície."
+                },
+                {
+                    question: "Falo ___ meus amigos todos os dias.",
+                    options: ["com", "para", "a", "de"],
+                    correct: 0,
+                    explanation: "'Com' indica companhia ou meio de comunicação."
+                },
+                {
+                    question: "Este presente é ___ ti.",
+                    options: ["para", "por", "com", "de"],
+                    correct: 0,
+                    explanation: "'Para' indica destinatário ou finalidade."
+                },
+                {
+                    question: "A Ana vem ___ Portugal.",
+                    options: ["de", "do", "da", "desde"],
+                    correct: 0,
+                    explanation: "'De' indica origem ou proveniência."
+                }
+            ],
+            adjectives: [
+                {
+                    question: "As raparigas são muito ___.",
+                    options: ["inteligentes", "inteligente", "inteligenta", "inteligêntes"],
+                    correct: 0,
+                    explanation: "O adjetivo deve concordar em género e número: 'inteligentes'."
+                },
+                {
+                    question: "Este carro é ___ que o meu.",
+                    options: ["melhor", "mais bom", "mais melhor", "mais maior"],
+                    correct: 0,
+                    explanation: "'Melhor' é o grau comparativo de superioridade de 'bom'."
+                },
+                {
+                    question: "Ela é ___ aluna da turma.",
+                    options: ["a melhor", "a mais boa", "melhor", "mais melhor"],
+                    correct: 0,
+                    explanation: "'A melhor' é o grau superlativo relativo de superioridade."
+                },
+                {
+                    question: "Os meninos estão ___.",
+                    options: ["cansados", "cansadas", "cansado", "cansada"],
+                    correct: 0,
+                    explanation: "O adjetivo concorda com 'meninos' (masculino plural)."
+                },
+                {
+                    question: "Esta casa é ___ antiga.",
+                    options: ["muito", "muita", "muitos", "muitas"],
+                    correct: 0,
+                    explanation: "'Muito' como advérbio é invariável."
+                }
+            ],
+            verbs: [
+                {
+                    question: "Eu ___ português todos os dias.",
+                    options: ["estudo", "estudas", "estuda", "estudamos"],
+                    correct: 0,
+                    explanation: "Primeira pessoa do singular do presente: 'eu estudo'."
+                },
+                {
+                    question: "Ontem nós ___ ao cinema.",
+                    options: ["fomos", "vamos", "íamos", "iremos"],
+                    correct: 0,
+                    explanation: "Pretérito perfeito de 'ir': 'nós fomos'."
+                },
+                {
+                    question: "Se tu ___ estudar, terás boas notas.",
+                    options: ["continuares", "continuas", "continuaste", "continuarás"],
+                    correct: 0,
+                    explanation: "Futuro do conjuntivo: 'se tu continuares'."
+                },
+                {
+                    question: "Eles ___ a correr quando chegámos.",
+                    options: ["estavam", "estão", "estarão", "estiveram"],
+                    correct: 0,
+                    explanation: "Pretérito imperfeito: ação em progresso no passado."
+                },
+                {
+                    question: "Amanhã eu ___ cedo.",
+                    options: ["acordarei", "acordo", "acordei", "acordava"],
+                    correct: 0,
+                    explanation: "Futuro simples: 'eu acordarei'."
+                }
+            ],
+            adverbs: [
+                {
+                    question: "Ela fala ___ português.",
+                    options: ["muito bem", "muito boa", "muita bem", "muita boa"],
+                    correct: 0,
+                    explanation: "'Muito bem' - advérbio modifica verbo, não varia."
+                },
+                {
+                    question: "Chegaram ___ atrasados.",
+                    options: ["bastante", "bastantes", "bastanta", "bastantas"],
+                    correct: 0,
+                    explanation: "'Bastante' como advérbio é invariável."
+                },
+                {
+                    question: "Ele correu ___.",
+                    options: ["rapidamente", "rápido", "rápida", "rápidos"],
+                    correct: 0,
+                    explanation: "Advérbio de modo: 'rapidamente'."
+                },
+                {
+                    question: "___ estudas português?",
+                    options: ["Onde", "Aonde", "Donde", "Para onde"],
+                    correct: 0,
+                    explanation: "'Onde' para localização sem movimento."
+                },
+                {
+                    question: "Ele chegou ___.",
+                    options: ["ontem", "no ontem", "em ontem", "ao ontem"],
+                    correct: 0,
+                    explanation: "Advérbio de tempo: 'ontem' (sem preposição)."
+                }
+            ],
+            pronouns: [
+                {
+                    question: "Eu vi ___ no parque.",
+                    options: ["te", "ti", "tu", "teu"],
+                    correct: 0,
+                    explanation: "'Te' é pronome pessoal complemento direto."
+                },
+                {
+                    question: "Este livro é ___.",
+                    options: ["meu", "me", "mim", "eu"],
+                    correct: 0,
+                    explanation: "'Meu' é pronome possessivo."
+                },
+                {
+                    question: "Ele deu o livro ___.",
+                    options: ["me", "mim", "eu", "meu"],
+                    correct: 0,
+                    explanation: "'Me' é pronome pessoal complemento indireto."
+                },
+                {
+                    question: "___ rapaz é muito simpático.",
+                    options: ["Esse", "Esse", "Isto", "Aquilo"],
+                    correct: 0,
+                    explanation: "'Esse' é pronome demonstrativo para pessoa/coisa."
+                },
+                {
+                    question: "Não vi ___.",
+                    options: ["ninguém", "alguém", "todo mundo", "pessoa"],
+                    correct: 0,
+                    explanation: "'Ninguém' é pronome indefinido negativo."
+                }
+            ]
+        };
+
+        const writingPrompts = [
+            "Descreve o teu fim de semana ideal. O que farias? Onde irias? Com quem estarias?",
+            "Imagina que és um super-herói. Quais são os teus poderes e como os usarias para ajudar as pessoas?",
+            "Conta uma história sobre uma aventura numa floresta mágica.",
+            "Descreve a tua escola dos sonhos. Como seria? Que matérias teria?",
+            "Escreve sobre um dia em que tudo correu ao contrário.",
+            "Imagina que podes viajar no tempo. Para que época irias e porquê?",
+            "Conta a história de um animal que fala.",
+            "Descreve as tuas férias de verão ideais.",
+            "Escreve sobre um robot que se torna teu amigo.",
+            "Imagina que descobres um tesouro. O que farias com ele?"
+        ];
+
+        const speakingTexts = [
+            "A primavera chegou com flores coloridas e pássaros a cantar. O sol brilha intensamente no céu azul.",
+            "Portugal é um país maravilhoso com praias fantásticas e monumentos históricos incríveis.",
+            "Gosto muito de ler livros de aventuras e de ver filmes de comédia com os meus amigos.",
+            "A escola é importante para aprender coisas novas e fazer amizades que duram para sempre.",
+            "No verão, as famílias portuguesas gostam de ir à praia e comer gelados deliciosos.",
+            "A música portuguesa é muito rica, desde o fado tradicional até aos artistas modernos.",
+            "Os desportos ajudam-nos a manter a forma física e a desenvolver o espírito de equipa.",
+            "A tecnologia mudou a nossa vida, permitindo comunicar com pessoas de todo o mundo.",
+            "A natureza é preciosa e devemos protegê-la para as futuras gerações.",
+            "A culinária portuguesa é famosa pelos pastéis de nata e pelo bacalhau."
+        ];
+
+        // Estado da aplicação
+        let currentExercise = {
+            prepositions: 0,
+            adjectives: 0,
+            verbs: 0,
+            adverbs: 0,
+            pronouns: 0
+        };
+
+        let selectedAnswers = {};
+        let stats = {
+            correct: 0,
+            total: 0
+        };
+
+        let currentSection = 'prepositions';
+        let currentWritingPrompt = 0;
+        let currentSpeakingText = 0;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            loadExercise('prepositions');
+            loadWritingPrompt();
+            loadSpeakingText();
+            updateWordCount();
+
+            // Event listener para contagem de palavras
+            document.getElementById('writing-input').addEventListener('input', updateWordCount);
+        });
+
+        // Navegação entre secções
+        function showSection(sectionName) {
+            // Remove active class from all tabs and sections
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+
+            // Add active class to selected tab and section
+            event.target.classList.add('active');
+            document.getElementById(sectionName).classList.add('active');
+
+            currentSection = sectionName;
+
+            // Load exercise for the section
+            if (['prepositions', 'adjectives', 'verbs', 'adverbs', 'pronouns'].includes(sectionName)) {
+                loadExercise(sectionName);
+            }
+        }
+
+        // Carregar exercício
+        function loadExercise(type) {
+            const exercise = exerciseData[type][currentExercise[type]];
+            let prefix;
+            if (type === 'adverbs') prefix = 'adv';
+            else if (type === 'adjectives') prefix = 'adj';
+            else prefix = type.substring(0, 4);
+            const questionEl = document.getElementById(prefix + '-question');
+            const optionsEl = document.getElementById(prefix + '-options');
+            const feedbackEl = document.getElementById(prefix + '-feedback');
+
+            questionEl.textContent = exercise.question;
+            optionsEl.innerHTML = '';
+            feedbackEl.style.display = 'none';
+
+            exercise.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option';
+                optionEl.textContent = option;
+                optionEl.onclick = () => selectAnswer(type, index);
+                optionsEl.appendChild(optionEl);
+            });
+
+            selectedAnswers[type] = null;
+            updateProgress();
+        }
+
+        // Seleccionar resposta
+        function selectAnswer(type, index) {
+            let prefix;
+            if (type === 'adverbs') prefix = 'adv';
+            else if (type === 'adjectives') prefix = 'adj';
+            else prefix = type.substring(0, 4);
+            const optionsEl = document.getElementById(prefix + '-options');
+            optionsEl.querySelectorAll('.option').forEach((option, i) => {
+                option.classList.toggle('selected', i === index);
+            });
+            selectedAnswers[type] = index;
+        }
+
+        // Verificar resposta
+        function checkAnswer(type) {
+            if (selectedAnswers[type] === null) {
+                alert('Por favor, selecciona uma resposta!');
+                return;
+            }
+
+            const exercise = exerciseData[type][currentExercise[type]];
+            let prefix;
+            if (type === 'adverbs') prefix = 'adv';
+            else if (type === 'adjectives') prefix = 'adj';
+            else prefix = type.substring(0, 4);
+            const optionsEl = document.getElementById(prefix + '-options');
+            const feedbackEl = document.getElementById(prefix + '-feedback');
+            const isCorrect = selectedAnswers[type] === exercise.correct;
+
+            stats.total++;
+            if (isCorrect) {
+                stats.correct++;
+            }
+
+            // Mostrar feedback visual
+            optionsEl.querySelectorAll('.option').forEach((option, i) => {
+                if (i === exercise.correct) {
+                    option.classList.add('correct');
+                } else if (i === selectedAnswers[type] && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+                option.style.pointerEvents = 'none';
+            });
+
+            // Mostrar feedback textual
+            feedbackEl.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.textContent = exercise.explanation;
+            feedbackEl.style.display = 'block';
+
+            updateStats();
+            
+            if (isCorrect && stats.correct % 5 === 0) {
+                showAchievement();
+            }
+        }
+
+        // Próximo exercício
+        function nextExercise(type) {
+            currentExercise[type] = Math.floor(Math.random() * exerciseData[type].length);
+            loadExercise(type);
+        }
+
+        // Actualizar estatísticas
+        function updateStats() {
+            document.getElementById('correct-count').textContent = stats.correct;
+            document.getElementById('total-count').textContent = stats.total;
+            const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        // Actualizar barra de progresso
+        function updateProgress() {
+            const progress = ((stats.total % 10) / 10) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        // Mostrar conquista
+        function showAchievement() {
+            const achievementEl = document.getElementById('achievement');
+            const messages = [
+                '🎉 Fantástico! 5 respostas certas seguidas!',
+                '🌟 Excelente! Estás a progredir muito bem!',
+                '🚀 Incrível! O teu português está cada vez melhor!',
+                '👏 Parabéns! Continua assim!',
+                '🏆 Extraordinário! És um campeão!'
+            ];
+            
+            document.getElementById('achievement-text').textContent = 
+                messages[Math.floor(Math.random() * messages.length)];
+            achievementEl.style.display = 'block';
+            
+            setTimeout(() => {
+                achievementEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // Exercícios de escrita
+        function loadWritingPrompt() {
+            document.getElementById('writing-prompt').textContent = writingPrompts[currentWritingPrompt];
+        }
+
+        function nextWritingPrompt() {
+            currentWritingPrompt = (currentWritingPrompt + 1) % writingPrompts.length;
+            loadWritingPrompt();
+            document.getElementById('writing-input').value = '';
+            document.getElementById('writing-feedback').style.display = 'none';
+            updateWordCount();
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('writing-input').value;
+            const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            document.getElementById('word-count').textContent = words;
+        }
+
+        function analyzeWriting() {
+            const text = document.getElementById('writing-input').value.trim();
+            const feedbackEl = document.getElementById('writing-feedback');
+            
+            if (text === '') {
+                feedbackEl.className = 'feedback incorrect';
+                feedbackEl.textContent = 'Por favor, escreve algum texto primeiro!';
+                feedbackEl.style.display = 'block';
+                return;
+            }
+
+            const wordCount = text.split(/\s+/).length;
+            let feedback = '';
+
+            if (wordCount < 20) {
+                feedback = 'Bom começo! Tenta desenvolver mais as tuas ideias. Adiciona mais detalhes e descrições.';
+            } else if (wordCount < 50) {
+                feedback = 'Muito bem! Texto com boa extensão. Verifica a pontuação e a estrutura das frases.';
+            } else {
+                feedback = 'Excelente! Texto bem desenvolvido. Continua a praticar para melhorar ainda mais!';
+            }
+
+            feedbackEl.className = 'feedback correct';
+            feedbackEl.textContent = feedback;
+            feedbackEl.style.display = 'block';
+        }
+
+        // Exercícios de oralidade
+        function loadSpeakingText() {
+            document.getElementById('speaking-text').textContent = speakingTexts[currentSpeakingText];
+        }
+
+        function nextSpeakingText() {
+            currentSpeakingText = (currentSpeakingText + 1) % speakingTexts.length;
+            loadSpeakingText();
+            document.getElementById('speaking-feedback').style.display = 'none';
+        }
+
+        function startListening() {
+            const feedbackEl = document.getElementById('speaking-feedback');
+            feedbackEl.className = 'feedback correct';
+            feedbackEl.textContent = '🎙️ Boa! Lê o texto em voz alta. Foca-te na pronúncia clara e na entoação correcta. A prática regular ajuda muito!';
+            feedbackEl.style.display = 'block';
+        }
+
+        function playCorrectPronunciation() {
+            // Simulação de reprodução de áudio
+            const feedbackEl = document.getElementById('speaking-feedback');
+            feedbackEl.className = 'feedback correct';
+            feedbackEl.textContent = '🔊 Ouve atentamente a pronúncia correcta. Tenta imitar o ritmo e a entoação. Repete várias vezes!';
+            feedbackEl.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
